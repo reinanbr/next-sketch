@@ -1,0 +1,79 @@
+{
+  "name": "next-sketch",
+  "version": "0.2.0",
+  "description": "p5.js-style canvas sketches for React/Next.js — headless hooks plus drop-in <CanvasSketch>/<ThreeSketch> components, SSR-safe and DPR-aware, with an optional Three.js engine and a shared WebGL context budget.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run build",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "react",
+    "nextjs",
+    "canvas",
+    "sketch",
+    "p5js",
+    "animation",
+    "simulation",
+    "creative-coding",
+    "three",
+    "threejs",
+    "webgl",
+    "3d"
+  ],
+  "author": "ReinanBr",
+  "license": "MIT",
+  "homepage": "https://github.com/reinanbr/next-sketch#readme",
+  "bugs": {
+    "url": "https://github.com/reinanbr/next-sketch/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "three": ">=0.150.0"
+  },
+  "peerDependenciesMeta": {
+    "three": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.185.1",
+    "jest": "^30.0.0",
+    "jest-environment-jsdom": "^30.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.185.1",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.8.2"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reinanbr/next-sketch"
+  }
+}
