@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>react-three-fiber orbit simulation — next-sketch examples</title>
-<meta name="description" content="A small orbiting-bodies simulation with a draggable camera, ported from next-sketch's <FiberSketch /> (react-three-fiber) README example.">
+<meta name="description" content="A small orbiting-bodies simulation with a draggable camera, built with react-three-fiber used directly (next-sketch doesn't wrap it — see <ThreeSketch /> for next-sketch's own Three.js engine).">
 <link rel="stylesheet" href="../../assets/style.css">
 <script type="importmap">
   {
@@ -32,12 +32,11 @@
   </div>
 
   <details class="source">
-    <summary>View the equivalent next-sketch (React) code</summary>
+    <summary>View the equivalent React code (real react-three-fiber, not through next-sketch)</summary>
     <div class="source-body">
 <pre><code>'use client';
 
-import { FiberSketch } from 'next-sketch/fiber';
-import { useFrame } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useRef } from 'react';
 import * as THREE from 'three';
@@ -63,7 +62,7 @@ function Planet({ radius, size, speed, color }) {
 
 export default function OrbitSimulation() {
   return (
-    &lt;FiberSketch style={{ width: '100%', height: 400 }} camera={{ position: [0, 6, 12], fov: 50 }}&gt;
+    &lt;Canvas style={{ width: '100%', height: 400 }} camera={{ position: [0, 6, 12], fov: 50 }}&gt;
       &lt;ambientLight intensity={0.3} /&gt;
       &lt;pointLight position={[0, 0, 0]} intensity={80} color="#fde68a" /&gt;
       &lt;mesh&gt;
@@ -72,7 +71,7 @@ export default function OrbitSimulation() {
       &lt;/mesh&gt;
       {PLANETS.map((p, i) => &lt;Planet key={i} {...p} /&gt;)}
       &lt;OrbitControls enableDamping /&gt;
-    &lt;/FiberSketch&gt;
+    &lt;/Canvas&gt;
   );
 }</code></pre>
     </div>

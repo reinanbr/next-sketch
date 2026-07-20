@@ -4,14 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>p5.js dodge game — next-sketch examples</title>
-<meta name="description" content="A tiny arcade game — drag to dodge the falling blocks — built with real p5.js via <P5Sketch />.">
+<meta name="description" content="A tiny arcade game — drag to dodge the falling blocks — built with real p5.js used directly in a React app.">
 <link rel="stylesheet" href="../../assets/style.css">
 <!--
   The live demo below loads p5 v1's classic global build (self-contained,
   no bundler needed — p5 v2's ESM build has real npm dependencies like
   colorjs.io that only resolve through a real bundler). The sketch function
   itself is unchanged between p5 v1/v2 and is exactly what you'd pass to
-  <P5Sketch /> (which targets p5 v2 via @p5-wrapper/react in a real app).
+  @p5-wrapper/react's <P5Canvas /> in a real React app (next-sketch doesn't
+  wrap p5.js itself — see next-sketch's own <CanvasSketch /> for its
+  p5.js-style but dependency-free 2D engine).
 -->
 <script src="https://unpkg.com/p5@1.11.13/lib/p5.min.js"></script>
 </head>
@@ -30,16 +32,15 @@
   </div>
 
   <details class="source">
-    <summary>View the equivalent next-sketch (React) code</summary>
+    <summary>View the equivalent React code (real p5.js via @p5-wrapper/react)</summary>
     <div class="source-body">
 <pre><code>'use client';
 
-import { P5Sketch } from 'next-sketch/p5';
+import { P5Canvas } from '@p5-wrapper/react';
 
 export default function DodgeGame() {
   return (
-    &lt;P5Sketch
-      style={{ width: '100%', height: 400 }}
+    &lt;P5Canvas
       sketch={(p) => {
         const PLAYER_W = 36;
         let playerX;

@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking:** removed `<P5Sketch />` (`next-sketch/p5`) and `<FiberSketch />` (`next-sketch/fiber`),
+  along with the `@p5-wrapper/react`/`p5`/`@react-three/fiber` peer dependencies they pulled in.
+  Those wrapped a real, separate library's own component instead of being a next-sketch engine in
+  next-sketch's own style — out of step with `useCanvasSketch`/`CanvasSketch` (p5.js-style API,
+  built from scratch) and `useThreeSketch`/`ThreeSketch` (react-three-fiber-style `setup`/`draw`
+  API, built from scratch on top of `three` directly), which is how this package was designed from
+  0.2.0. If you want the actual p5.js or react-three-fiber APIs, use those libraries directly —
+  next-sketch's own `CanvasSketch`/`ThreeSketch` cover the same ground in the same *style*, on
+  next-sketch's own terms.
+- `P5SketchHandle`/`FiberSketchHandle` types removed accordingly.
+
 ## 0.3.1
 
 - No library code changes — docs/CI-only patch release.
