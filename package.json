@@ -1,7 +1,7 @@
 {
   "name": "next-sketch",
-  "version": "0.2.0",
-  "description": "p5.js-style canvas sketches for React/Next.js — headless hooks plus drop-in <CanvasSketch>/<ThreeSketch> components, SSR-safe and DPR-aware, with an optional Three.js engine and a shared WebGL context budget.",
+  "version": "0.3.0",
+  "description": "p5.js-style canvas sketches for React/Next.js — headless hooks plus drop-in <CanvasSketch>/<ThreeSketch>/<P5Sketch>/<FiberSketch> components, SSR-safe and DPR-aware, with optional Three.js, p5.js, and react-three-fiber engines behind their own subpath exports and a shared WebGL context budget.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -9,6 +9,21 @@
       "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./three": {
+      "types": "./dist/three.d.ts",
+      "require": "./dist/three.js",
+      "default": "./dist/three.js"
+    },
+    "./p5": {
+      "types": "./dist/p5.d.ts",
+      "require": "./dist/p5.js",
+      "default": "./dist/p5.js"
+    },
+    "./fiber": {
+      "types": "./dist/fiber.d.ts",
+      "require": "./dist/fiber.js",
+      "default": "./dist/fiber.js"
     }
   },
   "scripts": {
@@ -31,7 +46,12 @@
     "three",
     "threejs",
     "webgl",
-    "3d"
+    "3d",
+    "p5",
+    "p5js",
+    "react-three-fiber",
+    "r3f",
+    "game"
   ],
   "author": "ReinanBr",
   "license": "MIT",
@@ -43,6 +63,8 @@
     "node": ">=18"
   },
   "peerDependencies": {
+    "@p5-wrapper/react": ">=5.0.0",
+    "@react-three/fiber": ">=8.0.0",
     "react": ">=18",
     "react-dom": ">=18",
     "three": ">=0.150.0"
@@ -50,9 +72,17 @@
   "peerDependenciesMeta": {
     "three": {
       "optional": true
+    },
+    "@p5-wrapper/react": {
+      "optional": true
+    },
+    "@react-three/fiber": {
+      "optional": true
     }
   },
   "devDependencies": {
+    "@p5-wrapper/react": "^5.0.4",
+    "@react-three/fiber": "^9.6.1",
     "@testing-library/react": "^16.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.0.0",
@@ -61,6 +91,7 @@
     "@types/three": "^0.185.1",
     "jest": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0",
+    "p5": "^2.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "three": "^0.185.1",

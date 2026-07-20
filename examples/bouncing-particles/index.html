@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bouncing particles — next-sketch examples</title>
+<meta name="description" content="60 particles bouncing off the canvas edges, colored by speed with lerpColor — ported from examples/bouncing-particles.tsx.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+<div class="example-page">
+  <header class="example-header">
+    <h1>Bouncing particles</h1>
+    <a class="back" href="../../index.html">&larr; back to next-sketch</a>
+  </header>
+
+  <div class="stage">
+    <canvas id="sketch"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="toggle">Pause</button>
+    <span>60 particles, colored by speed via <code>lerpColor</code> — cold when slow, hot when fast.</span>
+  </div>
+
+  <details class="source">
+    <summary>View the full next-sketch (React) source</summary>
+    <div class="source-body">
+<pre><code>'use client';
+
+import { useRef } from 'react';
+import { CanvasSketch, lerpColor, randRange } from 'next-sketch';
+import type { CanvasSketchHandle } from 'next-sketch';
+
+interface Particle {
+  x: number; y: number; vx: number; vy: number; r: number;
+}
+
+const COLD: [number, number, number] = [59, 130, 246];
+const HOT: [number, number, number] = [239, 68, 68];
+
+export default function BouncingParticles() {
+  const particles = useRef&lt;Particle[]&gt;([]);
+  const sketchRef = useRef&lt;CanvasSketchHandle&gt;(null);
+
+  return (
+    &lt;div&gt;
+      &lt;CanvasSketch
+        ref={sketchRef}
+        style={{ width: '100%', height: 400, background: '#0f172a' }}
+        setup={({ width, height }) => {
+          particles.current = Array.from({ length: 60 }, () => ({
+            x: randRange(0, width),
+            y: randRange(0, height),
+            vx: randRange(-60, 60),
+            vy: randRange(-60, 60),
+            r: randRange(3, 7),
+          }));
+        }}
+        draw={({ ctx, width, height, dt }) => {
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(0, 0, width, height);
+
+          for (const p of particles.current) {
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            if (p.x &lt; p.r || p.x &gt; width - p.r) p.vx *= -1;
+            if (p.y &lt; p.r || p.y &gt; height - p.r) p.vy *= -1;
+
+            const speed = Math.hypot(p.vx, p.vy);
+            ctx.fillStyle = lerpColor(COLD, HOT, speed / 120);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }}
+      /&gt;
+      &lt;button onClick={() => sketchRef.current?.isRunning() ? sketchRef.current.stop() : sketchRef.current?.start()}&gt;
+        Play / Pause
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<script src="../../assets/sketch-engine.js"></script>
+<script src="../../assets/utils.js"></script>
+<script>
+  const COLD = [59, 130, 246];
+  const HOT = [239, 68, 68];
+  let particles = [];
+
+  const canvas = document.getElementById('sketch');
+  const sketch = createCanvasSketch(canvas, {
+    setup({ width, height }) {
+      particles = Array.from({ length: 60 }, () => ({
+        x: randRange(0, width),
+        y: randRange(0, height),
+        vx: randRange(-60, 60),
+        vy: randRange(-60, 60),
+        r: randRange(3, 7),
+      }));
+    },
+    draw({ ctx, width, height, dt }) {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, width, height);
+
+      for (const p of particles) {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        if (p.x < p.r || p.x > width - p.r) p.vx *= -1;
+        if (p.y < p.r || p.y > height - p.r) p.vy *= -1;
+
+        const speed = Math.hypot(p.vx, p.vy);
+        ctx.fillStyle = lerpColor(COLD, HOT, speed / 120);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    },
+  });
+
+  const toggle = document.getElementById('toggle');
+  toggle.addEventListener('click', () => {
+    if (sketch.isRunning()) {
+      sketch.stop();
+      toggle.textContent = 'Play';
+    } else {
+      sketch.start();
+      toggle.textContent = 'Pause';
+    }
+  });
+</script>
+</body>
+</html>

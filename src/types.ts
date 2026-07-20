@@ -102,3 +102,31 @@ export interface ThreeSketchHandle {
   reset: () => void;
   isRunning: () => boolean;
 }
+
+// ─────────────────────────────────────────────────────────────
+// p5.js sketches (optional — requires `@p5-wrapper/react` + `p5`)
+// ─────────────────────────────────────────────────────────────
+
+export interface P5SketchHandle {
+  /** Resumes the draw loop (`p5.loop()`). */
+  start: () => void;
+  /** Pauses the draw loop (`p5.noLoop()`) without discarding sketch state. */
+  stop: () => void;
+  /** Tears down and recreates the p5 instance, discarding all sketch state. */
+  reset: () => void;
+  isRunning: () => boolean;
+}
+
+// ─────────────────────────────────────────────────────────────
+// react-three-fiber sketches (optional — requires `@react-three/fiber` + `three`)
+// ─────────────────────────────────────────────────────────────
+
+export interface FiberSketchHandle {
+  /** Resumes the render loop (sets `frameloop` back to `"always"`/`"demand"`). */
+  start: () => void;
+  /** Pauses the render loop (sets `frameloop` to `"never"`) without unmounting the scene. */
+  stop: () => void;
+  /** Remounts the `<Canvas>`, discarding all scene state. */
+  reset: () => void;
+  isRunning: () => boolean;
+}

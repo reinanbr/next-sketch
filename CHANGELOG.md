@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.3.0
+
+- **Breaking:** split the package into subpath exports. The main `next-sketch` entry point now
+  only contains the dependency-free core (`useCanvasSketch`, `CanvasSketch`, `useInViewport`, the
+  WebGL budget, utilities); `useThreeSketch`/`<ThreeSketch />` moved to `next-sketch/three`. This
+  also fixes a real bug: the old single-barrel entry `require()`d `three` eagerly for *every*
+  consumer, so `import { CanvasSketch } from 'next-sketch'` crashed with `Cannot find module
+  'three'` if `three` wasn't installed, even for 2D-only usage. See
+  [Subpath exports](README.md#subpath-exports) for the full rationale and a migration note.
+- Added `<P5Sketch />` (`next-sketch/p5`): a drop-in wrapper around
+  [@p5-wrapper/react](https://www.npmjs.com/package/@p5-wrapper/react)'s `<P5Canvas />` for using
+  the real p5.js API and its ecosystem, with the same `className`/`style`, `lazy`/`rootMargin`
+  viewport-lazy mounting, and ref handle (`start`/`stop`/`reset`/`isRunning`) conventions as the
+  rest of next-sketch. Requires `@p5-wrapper/react` ^5 + `p5` ^2 (React 19+, Node 24+ — the only
+  currently-published `@p5-wrapper/react` line compatible with React 19's renamed internals).
+- Added `<FiberSketch />` (`next-sketch/fiber`): a drop-in wrapper around
+  [react-three-fiber](https://r3f.docs.pmnd.rs)'s `<Canvas />` for building 3D scenes
+  declaratively out of JSX/hooks instead of `useThreeSketch`'s imperative callbacks. Shares the
+  same WebGL context budget as `<ThreeSketch />`, plus the same `lazy`/`rootMargin` mounting and
+  ref-handle conventions (`start`/`stop` toggle `frameloop`, `reset` remounts the Canvas).
+- `configureWebglBudget`/`getWebglBudget` stay on the main `next-sketch` entry point (no
+  dependency of their own) and are now shared by both `<ThreeSketch />` and `<FiberSketch />`.
+
 ## 0.2.0
 
 - Added `useThreeSketch`/`<ThreeSketch />`: same engine shape as the 2D sketch, backed by

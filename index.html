@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>next-sketch — p5.js-style canvas sketches for React &amp; Next.js</title>
+<meta name="description" content="Documentation and live examples for next-sketch: a headless hook plus a drop-in <CanvasSketch />/<ThreeSketch /> component for p5.js-style canvas and Three.js sketches in React and Next.js.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <nav>
+      <a href="#why">Why</a>
+      <a href="#gallery">Examples</a>
+      <a href="#api">API</a>
+      <a href="https://github.com/reinanbr/next-sketch">GitHub</a>
+      <a href="https://www.npmjs.com/package/next-sketch">npm</a>
+    </nav>
+    <h1>next-sketch</h1>
+    <p class="tagline">
+      p5.js-style canvas sketches for React and Next.js — a headless hook plus a drop-in
+      <code>&lt;CanvasSketch /&gt;</code> component. DPR-aware resizing, a requestAnimationFrame
+      loop with <code>dt</code>/<code>time</code>/<code>frame</code>, normalized pointer/keyboard
+      input, and full SSR safety, all in one dependency-free package.
+    </p>
+    <div class="install">npm install next-sketch</div>
+    <div class="btn-row">
+      <a class="btn primary" href="#gallery">View live examples</a>
+      <a class="btn" href="https://github.com/reinanbr/next-sketch">GitHub repo</a>
+      <a class="btn" href="https://www.npmjs.com/package/next-sketch">npm package</a>
+    </div>
+    <p class="badges" style="margin-top:1.5rem">
+      <img src="https://img.shields.io/npm/v/next-sketch.svg" alt="npm version">
+      <img src="https://img.shields.io/npm/dm/next-sketch.svg" alt="npm downloads">
+      <img src="https://github.com/reinanbr/next-sketch/actions/workflows/ci.yml/badge.svg" alt="CI">
+      <img src="https://img.shields.io/npm/l/next-sketch.svg" alt="license">
+    </p>
+  </div>
+</header>
+
+<section id="why">
+  <div class="container">
+    <h2>Why</h2>
+    <p class="lead">
+      Every hand-rolled canvas animation in React ends up rewriting the same plumbing: a
+      <code>canvasRef</code>, a <code>devicePixelRatio</code>-aware resize handler, a
+      <code>requestAnimationFrame</code> loop with manual <code>dt</code> bookkeeping, pointer
+      coordinates translated through <code>getBoundingClientRect()</code>, and cleanup on unmount.
+      next-sketch extracts that plumbing once so you can focus on <code>setup</code>/<code>draw</code>,
+      the way you would in <a href="https://p5js.org">p5.js</a> — but as an idiomatic React
+      hook/component instead of a global-mode sketch.
+    </p>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="container">
+    <h2>Live examples</h2>
+    <p class="lead">
+      Each card below is a standalone, dependency-free static page — a vanilla-JS port of the
+      same <code>setup</code>/<code>draw</code> pair you'd pass to <code>&lt;CanvasSketch /&gt;</code>
+      or <code>&lt;ThreeSketch /&gt;</code>. Open "View source" on any of them to see the real
+      next-sketch (React) code side by side.
+    </p>
+
+    <div class="gallery-grid">
+      <div class="card">
+        <div class="frame-wrap">
+          <iframe src="examples/quickstart/index.html" loading="lazy" title="Quickstart demo"></iframe>
+        </div>
+        <div class="card-body">
+          <h3>Quickstart</h3>
+          <p>The README's first example: a single circle orbiting the canvas center, driven by <code>time</code>.</p>
+          <div class="card-links">
+            <a href="examples/quickstart/index.html">Open standalone &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="frame-wrap">
+          <iframe src="examples/bouncing-particles/index.html" loading="lazy" title="Bouncing particles demo"></iframe>
+        </div>
+        <div class="card-body">
+          <h3>Bouncing particles</h3>
+          <p>60 particles bouncing off the edges, colored by speed with <code>lerpColor</code> and <code>randRange</code>.</p>
+          <div class="card-links">
+            <a href="examples/bouncing-particles/index.html">Open standalone &rarr;</a>
+            <a href="examples/bouncing-particles.tsx">.tsx source</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="frame-wrap">
+          <iframe src="examples/pointer-trail/index.html" loading="lazy" title="Pointer trail demo"></iframe>
+        </div>
+        <div class="card-body">
+          <h3>Pointer trail</h3>
+          <p>Move the pointer to draw, click to burst a ring — demonstrates <code>onPointerMove</code>/<code>onPointerDown</code> input.</p>
+          <div class="card-links">
+            <a href="examples/pointer-trail/index.html">Open standalone &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="frame-wrap">
+          <iframe src="examples/three-icosahedron/index.html" loading="lazy" title="Three.js icosahedron demo"></iframe>
+        </div>
+        <div class="card-body">
+          <h3>Three.js icosahedron</h3>
+          <p>A rotating icosahedron rendered with Three.js, the same scene as the <code>useThreeSketch</code> README snippet.</p>
+          <div class="card-links">
+            <a href="examples/three-icosahedron/index.html">Open standalone &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="api">
+  <div class="container">
+    <h2>API</h2>
+    <p class="lead">Condensed reference — see the <a href="https://github.com/reinanbr/next-sketch#readme">full README</a> for every detail.</p>
+
+    <div class="api-grid">
+      <div class="api-block">
+        <h3>useCanvasSketch(options)</h3>
+        <p>The headless engine. Returns a <code>canvasRef</code> to attach to your own <code>&lt;canvas&gt;</code>, plus imperative controls.</p>
+<pre><code>const { canvasRef, start, stop, reset, isRunning, running } = useCanvasSketch({
+  setup?: (info: SetupInfo) => void,
+  draw?: (info: DrawInfo) => void,
+  onPointerDown?: (info: PointerInfo) => void,
+  onPointerMove?: (info: PointerInfo) => void,
+  onPointerUp?: (info: PointerInfo) => void,
+  onKeyDown?: (event: KeyboardEvent) => void,
+  onKeyUp?: (event: KeyboardEvent) => void,
+  autoStart?: boolean, // default true
+});</code></pre>
+        <p>
+          <code>SetupInfo</code> — <code>{ ctx, canvas, width, height }</code> (CSS pixels, DPR-normalized).
+          <code>DrawInfo</code> adds <code>{ dt, time, frame }</code>. <code>PointerInfo</code> is
+          <code>{ x, y, event }</code>, localized to the canvas in CSS pixels.
+        </p>
+      </div>
+
+      <div class="api-block">
+        <h3>&lt;CanvasSketch /&gt;</h3>
+        <p>A thin <code>&lt;canvas&gt;</code> wrapper around the hook. Same options as props, plus <code>className</code>/<code>style</code>. Pass a <code>ref</code> to get a <code>CanvasSketchHandle</code> (<code>start</code>/<code>stop</code>/<code>reset</code>/<code>isRunning</code>).</p>
+      </div>
+
+      <div class="api-block">
+        <h3>useThreeSketch(options)</h3>
+        <p>Same engine, backed by <a href="https://threejs.org">Three.js</a> instead of a 2D context. <code>setup</code>/<code>draw</code> get <code>{ scene, camera, renderer, canvas, width, height }</code> (plus <code>dt</code>/<code>time</code>/<code>frame</code> in draw); <code>renderer.render(scene, camera)</code> happens for you. Requires <code>three</code> as a peer dependency — not bundled.</p>
+<pre><code>import { ThreeSketch } from 'next-sketch/three';
+import * as THREE from 'three';
+
+&lt;ThreeSketch
+  style={{ width: '100%', height: 400 }}
+  setup={({ scene }) => {
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    scene.add(new THREE.Mesh(
+      new THREE.IcosahedronGeometry(1.5, 1),
+      new THREE.MeshStandardMaterial({ color: '#6366f1' }),
+    ));
+  }}
+  draw={({ scene, dt }) => { scene.children[1].rotation.y += dt; }}
+/&gt;</code></pre>
+        <p>On unmount, every geometry/material in the scene graph is disposed and the WebGL context is force-lost, so it's actually freed.</p>
+      </div>
+
+      <div class="api-block">
+        <h3>&lt;ThreeSketch /&gt;</h3>
+        <p>A thin <code>&lt;canvas&gt;</code> wrapper around <code>useThreeSketch</code>, mirroring <code>&lt;CanvasSketch /&gt;</code>: same ref-based handle, plus <code>className</code>/<code>style</code>.</p>
+      </div>
+
+      <div class="api-block">
+        <h3>WebGL context budget</h3>
+        <p>
+          A page rendering several live 3D sketches at once can hit the browser's per-process WebGL
+          context limit (Chrome: ~16, Safari: often lower); past it, browsers silently evict the
+          <em>oldest</em> context with no error. <code>useThreeSketch</code> guards against this by
+          default — each instance waits for a slot in a shared, module-level budget (default: 4
+          concurrent) before creating its renderer.
+        </p>
+<pre><code>import { configureWebglBudget, getWebglBudget } from 'next-sketch';
+
+configureWebglBudget(6); // raise/lower the app-wide cap
+getWebglBudget();        // -> { active: 2, max: 6 }</code></pre>
+        <p>Opt a specific sketch out with <code>respectBudget: false</code> (e.g. one full, interactive detail-page simulation, as opposed to a grid of decorative previews).</p>
+      </div>
+
+      <div class="api-block">
+        <h3>useInViewport(ref, options)</h3>
+        <p>Tracks whether an element is inside the viewport via <code>IntersectionObserver</code>, so you can mount an expensive sketch only while it's actually visible.</p>
+<pre><code>const wrapperRef = useRef&lt;HTMLDivElement&gt;(null);
+const inView = useInViewport(wrapperRef, { rootMargin: '200px', once: false });</code></pre>
+        <p>With <code>once: true</code> it stays <code>true</code> forever after the first intersection — no restart cost on scroll. With <code>once: false</code> it flips back to <code>false</code> off-screen, letting a <code>&lt;ThreeSketch /&gt;</code> unmount and free its budget slot in a long gallery page.</p>
+      </div>
+
+      <div class="api-block">
+        <h3>Utilities</h3>
+        <p>Small helpers factored out of the same duplicated math every canvas sketch ends up writing.</p>
+<pre><code>import { clamp, randRange, lerpColor } from 'next-sketch';
+
+clamp(value, min, max);              // -> number
+randRange(min, max);                 // -> number
+lerpColor([59,130,246], [239,68,68], t); // -> "rgb(r,g,b)"</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="nextjs">
+  <div class="container">
+    <h2>Next.js / SSR</h2>
+    <p class="lead">
+      <code>useCanvasSketch</code>/<code>CanvasSketch</code> never touch <code>window</code>/<code>document</code>
+      outside of effects, so they're safe to import in a Server Component tree. If you still prefer
+      to opt a sketch fully out of SSR (e.g. it depends on <code>window</code> inside your own
+      <code>draw</code> callback), wrap it the usual way:
+    </p>
+<pre><code>import dynamic from 'next/dynamic';
+const Sketch = dynamic(() => import('./Sketch'), { ssr: false });</code></pre>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>MIT &copy; <a href="https://github.com/reinanbr">Reinan Br.</a> &mdash;
+      <a href="https://github.com/reinanbr/next-sketch">Source</a> &middot;
+      <a href="https://github.com/reinanbr/next-sketch/issues">Issues</a> &middot;
+      <a href="https://www.npmjs.com/package/next-sketch">npm</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pointer trail — next-sketch examples</title>
+<meta name="description" content="A fading trail that follows the pointer, demonstrating next-sketch's onPointerMove/onPointerDown input handling.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+<div class="example-page">
+  <header class="example-header">
+    <h1>Pointer trail</h1>
+    <a class="back" href="../../index.html">&larr; back to next-sketch</a>
+  </header>
+
+  <div class="stage">
+    <canvas id="sketch"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="toggle">Pause</button>
+    <span>Move the pointer to draw, click to burst a ring — demonstrates <code>onPointerMove</code>/<code>onPointerDown</code>.</span>
+  </div>
+
+  <details class="source">
+    <summary>View the equivalent next-sketch (React) code</summary>
+    <div class="source-body">
+<pre><code>'use client';
+
+import { useRef } from 'react';
+import { CanvasSketch, clamp, lerpColor } from 'next-sketch';
+
+interface Point { x: number; y: number; age: number; burst?: boolean }
+
+const COOL: [number, number, number] = [99, 102, 241];
+const WARM: [number, number, number] = [239, 68, 68];
+
+export default function PointerTrail() {
+  const points = useRef&lt;Point[]&gt;([]);
+
+  return (
+    &lt;CanvasSketch
+      style={{ width: '100%', height: 400 }}
+      setup={({ ctx, width, height }) => {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, width, height);
+      }}
+      onPointerMove={({ x, y }) => {
+        points.current.push({ x, y, age: 0 });
+      }}
+      onPointerDown={({ x, y }) => {
+        points.current.push({ x, y, age: 0, burst: true });
+      }}
+      draw={({ ctx, width, height, dt }) => {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+        ctx.fillRect(0, 0, width, height);
+
+        points.current = points.current.filter((p) => p.age &lt; 1);
+        for (const p of points.current) {
+          p.age += dt * (p.burst ? 0.6 : 1.4);
+          const t = clamp(p.age, 0, 1);
+          ctx.strokeStyle = lerpColor(COOL, WARM, t);
+          ctx.lineWidth = p.burst ? 2 : 1;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.burst ? t * 60 : 3 + t * 10, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }}
+    /&gt;
+  );
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<script src="../../assets/sketch-engine.js"></script>
+<script src="../../assets/utils.js"></script>
+<script>
+  const COOL = [99, 102, 241];
+  const WARM = [239, 68, 68];
+  let points = [];
+
+  const canvas = document.getElementById('sketch');
+  const sketch = createCanvasSketch(canvas, {
+    setup({ ctx, width, height }) {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, width, height);
+    },
+    onPointerMove({ x, y }) {
+      points.push({ x, y, age: 0 });
+    },
+    onPointerDown({ x, y }) {
+      points.push({ x, y, age: 0, burst: true });
+    },
+    draw({ ctx, width, height, dt }) {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+      ctx.fillRect(0, 0, width, height);
+
+      points = points.filter((p) => p.age < 1);
+      for (const p of points) {
+        p.age += dt * (p.burst ? 0.6 : 1.4);
+        const t = clamp(p.age, 0, 1);
+        ctx.strokeStyle = lerpColor(COOL, WARM, t);
+        ctx.lineWidth = p.burst ? 2 : 1;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.burst ? t * 60 : 3 + t * 10, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    },
+  });
+
+  const toggle = document.getElementById('toggle');
+  toggle.addEventListener('click', () => {
+    if (sketch.isRunning()) {
+      sketch.stop();
+      toggle.textContent = 'Play';
+    } else {
+      sketch.start();
+      toggle.textContent = 'Pause';
+    }
+  });
+</script>
+</body>
+</html>
