@@ -232,12 +232,23 @@ gallery page instead of accumulating contexts forever.
 Small helpers factored out of the same duplicated math every canvas sketch ends up writing:
 
 ```ts
-import { clamp, randRange, lerpColor } from 'next-sketch';
+import { clamp, randRange, lerpColor, createNoise2D } from 'next-sketch';
 
 clamp(value, min, max);              // -> number
 randRange(min, max);                 // -> number
 lerpColor([59,130,246], [239,68,68], t); // -> "rgb(r,g,b)"
+
+const noise = createNoise2D(seed);   // seed defaults to 1 — same seed, same field
+noise(x, y);                         // -> number, continuous, roughly in [-1, 1], 0 at integer coords
 ```
+
+`createNoise2D` is a seeded 2D [Perlin noise](https://en.wikipedia.org/wiki/Perlin_noise) generator
+— smooth, continuous pseudo-randomness for flow fields, organic motion, terrain, etc., the same
+role as p5.js's `noise()`, built from scratch with zero dependencies. Pass fractional coordinates
+(e.g. `x * 0.01`) for smooth variation over a wide area; the same seed always reproduces the same
+field, so a sketch can be deterministic across reloads. See the
+[flow field example](https://reinanbr.github.io/next-sketch/examples/flow-field/index.html) for it
+driving a particle vector field.
 
 ## Next.js / SSR
 

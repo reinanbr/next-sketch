@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flow field — next-sketch examples</title>
+<meta name="description" content="500 particles drifting through a Perlin-noise vector field, built entirely on next-sketch's own <CanvasSketch /> and createNoise2D — no p5.js involved.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+<div class="example-page">
+  <header class="example-header">
+    <h1>Flow field</h1>
+    <a class="back" href="../../index.html">&larr; back to next-sketch</a>
+  </header>
+
+  <div class="stage">
+    <canvas id="sketch"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="toggle">Pause</button>
+    <span>500 particles drifting through a Perlin-noise vector field — <code>&lt;CanvasSketch /&gt;</code> plus <code>createNoise2D</code>, next-sketch's own engine end to end.</span>
+  </div>
+
+  <details class="source">
+    <summary>View the full next-sketch (React) source</summary>
+    <div class="source-body">
+<pre><code>'use client';
+
+import { useRef } from 'react';
+import { CanvasSketch, createNoise2D, randRange } from 'next-sketch';
+
+const PARTICLE_COUNT = 500;
+
+interface Particle {
+  x: number;
+  y: number;
+}
+
+export default function FlowField() {
+  const particles = useRef&lt;Particle[]&gt;([]);
+  const noise = useRef(createNoise2D(7));
+  const t = useRef(0);
+
+  return (
+    &lt;CanvasSketch
+      style={{ width: '100%', height: 400 }}
+      setup={({ ctx, width, height }) => {
+        particles.current = Array.from({ length: PARTICLE_COUNT }, () => ({
+          x: randRange(0, width),
+          y: randRange(0, height),
+        }));
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, width, height);
+      }}
+      draw={({ ctx, width, height, dt }) => {
+        t.current += dt;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.12)';
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.7)';
+
+        for (const p of particles.current) {
+          const angle = noise.current(p.x * 0.005 + t.current * 0.05, p.y * 0.005) * Math.PI * 4;
+          p.x += Math.cos(angle) * 90 * dt;
+          p.y += Math.sin(angle) * 90 * dt;
+          if (p.x &lt; 0) p.x = width;
+          if (p.x &gt; width) p.x = 0;
+          if (p.y &lt; 0) p.y = height;
+          if (p.y &gt; height) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }}
+    /&gt;
+  );
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<script src="../../assets/sketch-engine.js"></script>
+<script src="../../assets/utils.js"></script>
+<script>
+  const PARTICLE_COUNT = 500;
+  const noise = createNoise2D(7);
+  let particles = [];
+  let t = 0;
+
+  const canvas = document.getElementById('sketch');
+  const sketch = createCanvasSketch(canvas, {
+    setup({ ctx, width, height }) {
+      particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+        x: randRange(0, width),
+        y: randRange(0, height),
+      }));
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, width, height);
+    },
+    draw({ ctx, width, height, dt }) {
+      t += dt;
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.12)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = 'rgba(99, 102, 241, 0.7)';
+
+      for (const p of particles) {
+        const angle = noise(p.x * 0.005 + t * 0.05, p.y * 0.005) * Math.PI * 4;
+        p.x += Math.cos(angle) * 90 * dt;
+        p.y += Math.sin(angle) * 90 * dt;
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    },
+  });
+
+  const toggle = document.getElementById('toggle');
+  toggle.addEventListener('click', () => {
+    if (sketch.isRunning()) {
+      sketch.stop();
+      toggle.textContent = 'Play';
+    } else {
+      sketch.start();
+      toggle.textContent = 'Pause';
+    }
+  });
+</script>
+</body>
+</html>

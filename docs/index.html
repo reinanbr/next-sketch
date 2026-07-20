@@ -61,12 +61,11 @@
   <div class="container">
     <h2>Live examples</h2>
     <p class="lead">
-      Each card below is a standalone static page. The 2D/Three.js demos are vanilla-JS ports of
-      the same <code>setup</code>/<code>draw</code> pair you'd pass to <code>&lt;CanvasSketch /&gt;</code>
-      or <code>&lt;ThreeSketch /&gt;</code>. The p5.js and react-three-fiber demos below use those
-      libraries directly (next-sketch doesn't wrap them) — included as a reference point for the
-      style <code>&lt;CanvasSketch /&gt;</code>/<code>&lt;ThreeSketch /&gt;</code> are going for,
-      built next-sketch's own way instead of on top of those libraries.
+      Each card below is a standalone static page — a vanilla-JS port of the same
+      <code>setup</code>/<code>draw</code> pair you'd pass to <code>&lt;CanvasSketch /&gt;</code> or
+      <code>&lt;ThreeSketch /&gt;</code>, all built on next-sketch's own engines end to end (no
+      p5.js or react-three-fiber underneath). Open "View source" on any of them to see the real
+      next-sketch (React) code side by side — simulations and a small game included.
     </p>
 
     <div class="gallery-grid">
@@ -125,39 +124,26 @@
 
       <div class="card">
         <div class="frame-wrap">
-          <iframe src="examples/p5-flow-field/index.html" loading="lazy" title="p5.js flow field demo"></iframe>
+          <iframe src="examples/flow-field/index.html" loading="lazy" title="Flow field demo"></iframe>
         </div>
         <div class="card-body">
-          <h3>p5.js flow field <span class="tag">simulation</span></h3>
-          <p>500 particles drifting through a Perlin-noise vector field — real p5.js, used directly (not through next-sketch).</p>
+          <h3>Flow field <span class="tag">simulation</span></h3>
+          <p>500 particles drifting through a Perlin-noise vector field — <code>&lt;CanvasSketch /&gt;</code> plus <code>createNoise2D</code>, next-sketch's own engine end to end.</p>
           <div class="card-links">
-            <a href="examples/p5-flow-field/index.html">Open standalone &rarr;</a>
+            <a href="examples/flow-field/index.html">Open standalone &rarr;</a>
           </div>
         </div>
       </div>
 
       <div class="card">
         <div class="frame-wrap">
-          <iframe src="examples/p5-dodge-game/index.html" loading="lazy" title="p5.js dodge game demo"></iframe>
+          <iframe src="examples/dodge-game/index.html" loading="lazy" title="Dodge game demo"></iframe>
         </div>
         <div class="card-body">
-          <h3>p5.js dodge game <span class="tag">game</span></h3>
-          <p>Drag to dodge the falling blocks — score, collisions, and a restart-on-click game loop, built directly on real p5.js.</p>
+          <h3>Dodge game <span class="tag">game</span></h3>
+          <p>Drag to dodge the falling blocks — score, collisions, and a restart-on-click game loop, built on <code>&lt;CanvasSketch /&gt;</code>'s pointer input.</p>
           <div class="card-links">
-            <a href="examples/p5-dodge-game/index.html">Open standalone &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="frame-wrap">
-          <iframe src="examples/fiber-orbit/index.html" loading="lazy" title="react-three-fiber orbit simulation demo"></iframe>
-        </div>
-        <div class="card-body">
-          <h3>react-three-fiber orbit sim <span class="tag">simulation</span></h3>
-          <p>Three planets and a moon orbiting a sun, camera draggable via OrbitControls — built directly on react-three-fiber, not through next-sketch.</p>
-          <div class="card-links">
-            <a href="examples/fiber-orbit/index.html">Open standalone &rarr;</a>
+            <a href="examples/dodge-game/index.html">Open standalone &rarr;</a>
           </div>
         </div>
       </div>
@@ -247,12 +233,15 @@ const inView = useInViewport(wrapperRef, { rootMargin: '200px', once: false });<
 
       <div class="api-block">
         <h3>Utilities</h3>
-        <p>Small helpers factored out of the same duplicated math every canvas sketch ends up writing.</p>
-<pre><code>import { clamp, randRange, lerpColor } from 'next-sketch';
+        <p>Small helpers factored out of the same duplicated math every canvas sketch ends up writing — including a seeded 2D Perlin noise for flow fields and organic motion, the same role as p5.js's <code>noise()</code>, built from scratch.</p>
+<pre><code>import { clamp, randRange, lerpColor, createNoise2D } from 'next-sketch';
 
 clamp(value, min, max);              // -> number
 randRange(min, max);                 // -> number
-lerpColor([59,130,246], [239,68,68], t); // -> "rgb(r,g,b)"</code></pre>
+lerpColor([59,130,246], [239,68,68], t); // -> "rgb(r,g,b)"
+
+const noise = createNoise2D(seed);   // -> (x, y) => number, roughly in [-1, 1]
+noise(x * 0.01, y * 0.01);</code></pre>
       </div>
     </div>
   </div>

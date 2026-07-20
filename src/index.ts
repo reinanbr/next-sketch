@@ -5,8 +5,8 @@ export type { CanvasSketchProps } from './CanvasSketch';
 export { useInViewport } from './useInViewport';
 export type { UseInViewportOptions } from './useInViewport';
 export { configureWebglBudget, getWebglBudget } from './webglBudget';
-export { clamp, randRange, lerpColor } from './utils';
-export type { RGB } from './utils';
+export { clamp, randRange, lerpColor, createNoise2D } from './utils';
+export type { RGB, Noise2D } from './utils';
 export type {
   SetupInfo,
   DrawInfo,

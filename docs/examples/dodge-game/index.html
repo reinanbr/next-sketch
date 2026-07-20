@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dodge game — next-sketch examples</title>
+<meta name="description" content="A tiny arcade game — drag to dodge the falling blocks — built entirely on next-sketch's own <CanvasSketch />, no p5.js involved.">
+<link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+<div class="example-page">
+  <header class="example-header">
+    <h1>Dodge game</h1>
+    <a class="back" href="../../index.html">&larr; back to next-sketch</a>
+  </header>
+
+  <div class="stage">
+    <canvas id="sketch"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="toggle">Pause</button>
+    <span>Drag (or move the pointer) left/right to dodge the falling blocks — click to restart after a hit. Built on <code>&lt;CanvasSketch /&gt;</code>'s <code>onPointerMove</code>/<code>onPointerDown</code>.</span>
+  </div>
+
+  <details class="source">
+    <summary>View the full next-sketch (React) source</summary>
+    <div class="source-body">
+<pre><code>'use client';
+
+import { useRef } from 'react';
+import { CanvasSketch, clamp, randRange } from 'next-sketch';
+
+const PLAYER_W = 36;
+
+interface Block {
+  x: number;
+  y: number;
+  size: number;
+}
+
+export default function DodgeGame() {
+  const state = useRef({
+    width: 0,
+    playerX: 0,
+    pointerX: 0,
+    blocks: [] as Block[],
+    spawnTimer: 0,
+    elapsed: 0,
+    alive: true,
+  });
+
+  const reset = () => {
+    const s = state.current;
+    s.playerX = s.width / 2;
+    s.pointerX = s.width / 2;
+    s.blocks = [];
+    s.spawnTimer = 0;
+    s.elapsed = 0;
+    s.alive = true;
+  };
+
+  return (
+    &lt;CanvasSketch
+      style={{ width: '100%', height: 400 }}
+      setup={({ width }) => { state.current.width = width; reset(); }}
+      onPointerMove={({ x }) => { state.current.pointerX = x; }}
+      onPointerDown={() => { if (!state.current.alive) reset(); }}
+      draw={({ ctx, width, height, dt }) => {
+        const s = state.current;
+        s.width = width;
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, width, height);
+
+        if (s.alive) {
+          s.playerX = clamp(s.pointerX, PLAYER_W / 2, width - PLAYER_W / 2);
+          s.elapsed += dt;
+
+          const speed = 140 + s.elapsed * 12;
+          s.spawnTimer -= dt;
+          if (s.spawnTimer &lt;= 0) {
+            s.blocks.push({ x: randRange(20, width - 20), y: -20, size: randRange(18, 32) });
+            s.spawnTimer = Math.max(0.35, 0.9 - s.elapsed * 0.02);
+          }
+
+          for (const b of s.blocks) b.y += speed * dt;
+          s.blocks = s.blocks.filter((b) => b.y &lt; height + 40);
+
+          for (const b of s.blocks) {
+            const dx = Math.abs(b.x - s.playerX);
+            const dy = Math.abs(b.y - (height - 30));
+            if (dx &lt; (b.size + PLAYER_W) / 2 &amp;&amp; dy &lt; (b.size + 16) / 2) {
+              s.alive = false;
+            }
+          }
+        }
+
+        ctx.fillStyle = '#ef4444';
+        for (const b of s.blocks) ctx.fillRect(b.x - b.size / 2, b.y - b.size / 2, b.size, b.size);
+
+        ctx.fillStyle = '#6366f1';
+        ctx.fillRect(s.playerX - PLAYER_W / 2, height - 38, PLAYER_W, 16);
+
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(`Score: ${Math.floor(s.elapsed * 10)}`, 12, 12);
+
+        if (!s.alive) {
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+          ctx.fillRect(0, 0, width, height);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.font = '20px sans-serif';
+          ctx.fillText('Game over — click to restart', width / 2, height / 2);
+        }
+      }}
+    /&gt;
+  );
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<script src="../../assets/sketch-engine.js"></script>
+<script src="../../assets/utils.js"></script>
+<script>
+  const PLAYER_W = 36;
+  const canvas = document.getElementById('sketch');
+
+  const state = {
+    playerX: 0,
+    pointerX: 0,
+    blocks: [],
+    spawnTimer: 0,
+    elapsed: 0,
+    alive: true,
+  };
+
+  function reset(width) {
+    state.playerX = width / 2;
+    state.pointerX = width / 2;
+    state.blocks = [];
+    state.spawnTimer = 0;
+    state.elapsed = 0;
+    state.alive = true;
+  }
+
+  const sketch = createCanvasSketch(canvas, {
+    setup({ width }) {
+      reset(width);
+    },
+    onPointerMove({ x }) {
+      state.pointerX = x;
+    },
+    onPointerDown() {
+      if (!state.alive) reset(canvas.clientWidth);
+    },
+    draw({ ctx, width, height, dt }) {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, width, height);
+
+      if (state.alive) {
+        state.playerX = clamp(state.pointerX, PLAYER_W / 2, width - PLAYER_W / 2);
+        state.elapsed += dt;
+
+        const speed = 140 + state.elapsed * 12;
+        state.spawnTimer -= dt;
+        if (state.spawnTimer <= 0) {
+          state.blocks.push({ x: randRange(20, width - 20), y: -20, size: randRange(18, 32) });
+          state.spawnTimer = Math.max(0.35, 0.9 - state.elapsed * 0.02);
+        }
+
+        for (const b of state.blocks) b.y += speed * dt;
+        state.blocks = state.blocks.filter((b) => b.y < height + 40);
+
+        for (const b of state.blocks) {
+          const dx = Math.abs(b.x - state.playerX);
+          const dy = Math.abs(b.y - (height - 30));
+          if (dx < (b.size + PLAYER_W) / 2 && dy < (b.size + 16) / 2) {
+            state.alive = false;
+          }
+        }
+      }
+
+      ctx.fillStyle = '#ef4444';
+      for (const b of state.blocks) ctx.fillRect(b.x - b.size / 2, b.y - b.size / 2, b.size, b.size);
+
+      ctx.fillStyle = '#6366f1';
+      ctx.fillRect(state.playerX - PLAYER_W / 2, height - 38, PLAYER_W, 16);
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '14px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(`Score: ${Math.floor(state.elapsed * 10)}`, 12, 12);
+
+      if (!state.alive) {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = '20px sans-serif';
+        ctx.fillText('Game over — click to restart', width / 2, height / 2);
+      }
+    },
+  });
+
+  const toggle = document.getElementById('toggle');
+  toggle.addEventListener('click', () => {
+    if (sketch.isRunning()) {
+      sketch.stop();
+      toggle.textContent = 'Play';
+    } else {
+      sketch.start();
+      toggle.textContent = 'Pause';
+    }
+  });
+</script>
+</body>
+</html>

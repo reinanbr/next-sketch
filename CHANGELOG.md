@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.0
+
+- Added `createNoise2D(seed?)`: a seeded, zero-dependency 2D Perlin noise generator
+  (`(x, y) => number`, continuous, roughly in `[-1, 1]`) — the same role as p5.js's `noise()`,
+  built from scratch. Added specifically to let the docs gallery's p5.js flow-field demo be
+  rebuilt on `<CanvasSketch />` alone instead of real p5.js.
+- Docs gallery: replaced the p5.js flow-field/dodge-game demos and the react-three-fiber orbit
+  demo with `flow-field` and `dodge-game` — the same two simulations, now built end to end on
+  next-sketch's own `<CanvasSketch />` (the flow field using the new `createNoise2D`), with no
+  p5.js or react-three-fiber involved. The orbit simulation wasn't ported — it stays out of the
+  gallery for now.
+
 ## 0.4.0
 
 - **Breaking:** removed `<P5Sketch />` (`next-sketch/p5`) and `<FiberSketch />` (`next-sketch/fiber`),
