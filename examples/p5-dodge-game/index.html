@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>p5.js dodge game — next-sketch examples</title>
+<meta name="description" content="A tiny arcade game — drag to dodge the falling blocks — built with real p5.js via <P5Sketch />.">
+<link rel="stylesheet" href="../../assets/style.css">
+<!--
+  The live demo below loads p5 v1's classic global build (self-contained,
+  no bundler needed — p5 v2's ESM build has real npm dependencies like
+  colorjs.io that only resolve through a real bundler). The sketch function
+  itself is unchanged between p5 v1/v2 and is exactly what you'd pass to
+  <P5Sketch /> (which targets p5 v2 via @p5-wrapper/react in a real app).
+-->
+<script src="https://unpkg.com/p5@1.11.13/lib/p5.min.js"></script>
+</head>
+<body>
+<div class="example-page">
+  <header class="example-header">
+    <h1>p5.js dodge game</h1>
+    <a class="back" href="../../index.html">&larr; back to next-sketch</a>
+  </header>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="controls">
+    <button id="toggle">Pause</button>
+    <span>Drag (or move the pointer) left/right to dodge the falling blocks — click to restart after a hit.</span>
+  </div>
+
+  <details class="source">
+    <summary>View the equivalent next-sketch (React) code</summary>
+    <div class="source-body">
+<pre><code>'use client';
+
+import { P5Sketch } from 'next-sketch/p5';
+
+export default function DodgeGame() {
+  return (
+    &lt;P5Sketch
+      style={{ width: '100%', height: 400 }}
+      sketch={(p) => {
+        const PLAYER_W = 36;
+        let playerX;
+        let blocks = [];
+        let spawnTimer = 0;
+        let elapsed = 0;
+        let alive = true;
+
+        function reset() {
+          playerX = p.width / 2;
+          blocks = [];
+          spawnTimer = 0;
+          elapsed = 0;
+          alive = true;
+        }
+
+        p.setup = () => {
+          p.createCanvas(p.windowWidth, 400);
+          reset();
+        };
+
+        p.draw = () => {
+          p.background(15, 23, 42);
+
+          if (alive) {
+            playerX = p.constrain(p.mouseX, PLAYER_W / 2, p.width - PLAYER_W / 2);
+            elapsed += p.deltaTime / 1000;
+
+            const speed = 140 + elapsed * 12;
+            spawnTimer -= p.deltaTime / 1000;
+            if (spawnTimer &lt;= 0) {
+              blocks.push({ x: p.random(20, p.width - 20), y: -20, size: p.random(18, 32) });
+              spawnTimer = Math.max(0.35, 0.9 - elapsed * 0.02);
+            }
+
+            for (const b of blocks) b.y += speed * (p.deltaTime / 1000);
+            blocks = blocks.filter((b) => b.y &lt; p.height + 40);
+
+            for (const b of blocks) {
+              const dx = Math.abs(b.x - playerX);
+              const dy = Math.abs(b.y - (p.height - 30));
+              if (dx &lt; (b.size + PLAYER_W) / 2 &amp;&amp; dy &lt; (b.size + 16) / 2) {
+                alive = false;
+              }
+            }
+          }
+
+          p.noStroke();
+          p.fill(239, 68, 68);
+          for (const b of blocks) p.rect(b.x - b.size / 2, b.y - b.size / 2, b.size, b.size, 4);
+
+          p.fill(99, 102, 241);
+          p.rect(playerX - PLAYER_W / 2, p.height - 38, PLAYER_W, 16, 4);
+
+          p.fill(226, 232, 240);
+          p.textSize(14);
+          p.textAlign(p.LEFT, p.TOP);
+          p.text(`Score: ${Math.floor(elapsed * 10)}`, 12, 12);
+
+          if (!alive) {
+            p.fill(15, 23, 42, 200);
+            p.rect(0, 0, p.width, p.height);
+            p.fill(226, 232, 240);
+            p.textAlign(p.CENTER, p.CENTER);
+            p.textSize(20);
+            p.text('Game over — click to restart', p.width / 2, p.height / 2);
+          }
+        };
+
+        p.mousePressed = () => { if (!alive) reset(); };
+      }}
+    /&gt;
+  );
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<script>
+  const stage = document.getElementById('stage');
+
+  const sketch = (p) => {
+    const PLAYER_W = 36;
+    let playerX;
+    let blocks = [];
+    let spawnTimer = 0;
+    let elapsed = 0;
+    let alive = true;
+
+    function reset() {
+      playerX = p.width / 2;
+      blocks = [];
+      spawnTimer = 0;
+      elapsed = 0;
+      alive = true;
+    }
+
+    p.setup = () => {
+      const canvas = p.createCanvas(stage.clientWidth, stage.clientHeight);
+      canvas.parent(stage);
+      reset();
+    };
+
+    p.draw = () => {
+      p.background(15, 23, 42);
+
+      if (alive) {
+        playerX = p.constrain(p.mouseX, PLAYER_W / 2, p.width - PLAYER_W / 2);
+        elapsed += p.deltaTime / 1000;
+
+        const speed = 140 + elapsed * 12;
+        spawnTimer -= p.deltaTime / 1000;
+        if (spawnTimer <= 0) {
+          blocks.push({ x: p.random(20, p.width - 20), y: -20, size: p.random(18, 32) });
+          spawnTimer = Math.max(0.35, 0.9 - elapsed * 0.02);
+        }
+
+        for (const b of blocks) b.y += speed * (p.deltaTime / 1000);
+        blocks = blocks.filter((b) => b.y < p.height + 40);
+
+        for (const b of blocks) {
+          const dx = Math.abs(b.x - playerX);
+          const dy = Math.abs(b.y - (p.height - 30));
+          if (dx < (b.size + PLAYER_W) / 2 && dy < (b.size + 16) / 2) {
+            alive = false;
+          }
+        }
+      }
+
+      p.noStroke();
+      p.fill(239, 68, 68);
+      for (const b of blocks) p.rect(b.x - b.size / 2, b.y - b.size / 2, b.size, b.size, 4);
+
+      p.fill(99, 102, 241);
+      p.rect(playerX - PLAYER_W / 2, p.height - 38, PLAYER_W, 16, 4);
+
+      p.fill(226, 232, 240);
+      p.textSize(14);
+      p.textAlign(p.LEFT, p.TOP);
+      p.text(`Score: ${Math.floor(elapsed * 10)}`, 12, 12);
+
+      if (!alive) {
+        p.fill(15, 23, 42, 200);
+        p.rect(0, 0, p.width, p.height);
+        p.fill(226, 232, 240);
+        p.textAlign(p.CENTER, p.CENTER);
+        p.textSize(20);
+        p.text('Game over — click to restart', p.width / 2, p.height / 2);
+      }
+    };
+
+    p.mousePressed = () => { if (!alive) reset(); };
+  };
+
+  const instance = new p5(sketch, stage);
+
+  new ResizeObserver(() => {
+    instance.resizeCanvas(stage.clientWidth, stage.clientHeight);
+  }).observe(stage);
+
+  const toggle = document.getElementById('toggle');
+  let running = true;
+  toggle.addEventListener('click', () => {
+    if (running) {
+      instance.noLoop();
+      toggle.textContent = 'Play';
+    } else {
+      instance.loop();
+      toggle.textContent = 'Pause';
+    }
+    running = !running;
+  });
+</script>
+</body>
+</html>

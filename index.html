@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>next-sketch — p5.js-style canvas sketches for React &amp; Next.js</title>
-<meta name="description" content="Documentation and live examples for next-sketch: a headless hook plus a drop-in <CanvasSketch />/<ThreeSketch /> component for p5.js-style canvas and Three.js sketches in React and Next.js.">
+<meta name="description" content="Documentation and live examples for next-sketch: headless hooks plus drop-in <CanvasSketch />/<ThreeSketch />/<P5Sketch />/<FiberSketch /> components for canvas, Three.js, real p5.js, and react-three-fiber sketches, simulations, and games in React and Next.js.">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -23,7 +23,10 @@
       p5.js-style canvas sketches for React and Next.js — a headless hook plus a drop-in
       <code>&lt;CanvasSketch /&gt;</code> component. DPR-aware resizing, a requestAnimationFrame
       loop with <code>dt</code>/<code>time</code>/<code>frame</code>, normalized pointer/keyboard
-      input, and full SSR safety, all in one dependency-free package.
+      input, and full SSR safety, all in one dependency-free core — plus optional
+      <code>&lt;ThreeSketch /&gt;</code>, <code>&lt;P5Sketch /&gt;</code>, and
+      <code>&lt;FiberSketch /&gt;</code> engines for building simulations and games with Three.js,
+      real p5.js, and react-three-fiber.
     </p>
     <div class="install">npm install next-sketch</div>
     <div class="btn-row">
@@ -59,10 +62,11 @@
   <div class="container">
     <h2>Live examples</h2>
     <p class="lead">
-      Each card below is a standalone, dependency-free static page — a vanilla-JS port of the
-      same <code>setup</code>/<code>draw</code> pair you'd pass to <code>&lt;CanvasSketch /&gt;</code>
-      or <code>&lt;ThreeSketch /&gt;</code>. Open "View source" on any of them to see the real
-      next-sketch (React) code side by side.
+      Each card below is a standalone static page. The 2D/Three.js demos are vanilla-JS ports of
+      the same <code>setup</code>/<code>draw</code> pair you'd pass to <code>&lt;CanvasSketch /&gt;</code>
+      or <code>&lt;ThreeSketch /&gt;</code>; the p5.js demos run the exact <code>sketch</code>
+      function you'd hand to <code>&lt;P5Sketch /&gt;</code>. Open "View source" on any of them to
+      see the real next-sketch (React) code side by side — simulations and a small game included.
     </p>
 
     <div class="gallery-grid">
@@ -115,6 +119,45 @@
           <p>A rotating icosahedron rendered with Three.js, the same scene as the <code>useThreeSketch</code> README snippet.</p>
           <div class="card-links">
             <a href="examples/three-icosahedron/index.html">Open standalone &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="frame-wrap">
+          <iframe src="examples/p5-flow-field/index.html" loading="lazy" title="p5.js flow field demo"></iframe>
+        </div>
+        <div class="card-body">
+          <h3>p5.js flow field <span class="tag">simulation</span></h3>
+          <p>500 particles drifting through a Perlin-noise vector field — real p5.js running via <code>&lt;P5Sketch /&gt;</code>.</p>
+          <div class="card-links">
+            <a href="examples/p5-flow-field/index.html">Open standalone &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="frame-wrap">
+          <iframe src="examples/p5-dodge-game/index.html" loading="lazy" title="p5.js dodge game demo"></iframe>
+        </div>
+        <div class="card-body">
+          <h3>p5.js dodge game <span class="tag">game</span></h3>
+          <p>Drag to dodge the falling blocks — score, collisions, and a restart-on-click game loop built with <code>&lt;P5Sketch /&gt;</code>.</p>
+          <div class="card-links">
+            <a href="examples/p5-dodge-game/index.html">Open standalone &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="frame-wrap">
+          <iframe src="examples/fiber-orbit/index.html" loading="lazy" title="react-three-fiber orbit simulation demo"></iframe>
+        </div>
+        <div class="card-body">
+          <h3>react-three-fiber orbit sim <span class="tag">simulation</span></h3>
+          <p>Three planets and a moon orbiting a sun, camera draggable via OrbitControls — the <code>&lt;FiberSketch /&gt;</code> scene shape.</p>
+          <div class="card-links">
+            <a href="examples/fiber-orbit/index.html">Open standalone &rarr;</a>
           </div>
         </div>
       </div>
@@ -179,13 +222,55 @@ import * as THREE from 'three';
       </div>
 
       <div class="api-block">
+        <h3>&lt;P5Sketch /&gt; <span class="tag">next-sketch/p5</span></h3>
+        <p>A drop-in wrapper around <a href="https://www.npmjs.com/package/@p5-wrapper/react">@p5-wrapper/react</a>'s <code>&lt;P5Canvas /&gt;</code>, for the real p5.js API (<code>preload</code>, instance mode, the whole p5 add-on ecosystem) instead of next-sketch's minimal <code>ctx</code>/<code>draw</code> surface. Requires <code>@p5-wrapper/react</code> ^5 + <code>p5</code> ^2 (React 19+, Node 24+).</p>
+<pre><code>import { P5Sketch } from 'next-sketch/p5';
+
+&lt;P5Sketch
+  style={{ width: '100%', height: 400 }}
+  sketch={(p) => {
+    p.setup = () => p.createCanvas(p.windowWidth, 400);
+    p.draw = () => {
+      p.background(15, 23, 42);
+      p.circle(p.width / 2, p.height / 2, 40);
+    };
+  }}
+/&gt;</code></pre>
+        <p>A ref gives a <code>P5SketchHandle</code>: <code>start</code>/<code>stop</code> call the p5 instance's <code>loop()</code>/<code>noLoop()</code>; <code>reset</code> tears down and recreates the p5 instance. <code>lazy</code>/<code>rootMargin</code> mount it only once in view.</p>
+      </div>
+
+      <div class="api-block">
+        <h3>&lt;FiberSketch /&gt; <span class="tag">next-sketch/fiber</span></h3>
+        <p>A drop-in wrapper around <a href="https://r3f.docs.pmnd.rs">react-three-fiber</a>'s <code>&lt;Canvas /&gt;</code>, for building 3D scenes declaratively out of JSX and hooks (<code>useFrame</code>, drei helpers, physics libraries, ...) instead of <code>useThreeSketch</code>'s imperative callbacks. Requires <code>@react-three/fiber</code> + <code>three</code>.</p>
+<pre><code>import { FiberSketch } from 'next-sketch/fiber';
+import { useFrame } from '@react-three/fiber';
+
+function SpinningBox() {
+  const ref = useRef();
+  useFrame((_, dt) => { ref.current.rotation.y += dt; });
+  return (
+    &lt;mesh ref={ref}&gt;
+      &lt;boxGeometry args={[1.5, 1.5, 1.5]} /&gt;
+      &lt;meshStandardMaterial color="#6366f1" /&gt;
+    &lt;/mesh&gt;
+  );
+}
+
+&lt;FiberSketch style={{ width: '100%', height: 400 }}&gt;
+  &lt;ambientLight intensity={0.6} /&gt;
+  &lt;SpinningBox /&gt;
+&lt;/FiberSketch&gt;</code></pre>
+        <p>Accepts every <code>&lt;Canvas /&gt;</code> prop, plus <code>lazy</code>/<code>rootMargin</code> and <code>respectBudget</code> — it shares the same WebGL context budget as <code>&lt;ThreeSketch /&gt;</code>, so mixing both engines on one page stays within the browser's context limit. A ref's <code>start</code>/<code>stop</code> toggle the render loop; <code>reset</code> remounts the Canvas.</p>
+      </div>
+
+      <div class="api-block">
         <h3>WebGL context budget</h3>
         <p>
           A page rendering several live 3D sketches at once can hit the browser's per-process WebGL
           context limit (Chrome: ~16, Safari: often lower); past it, browsers silently evict the
-          <em>oldest</em> context with no error. <code>useThreeSketch</code> guards against this by
-          default — each instance waits for a slot in a shared, module-level budget (default: 4
-          concurrent) before creating its renderer.
+          <em>oldest</em> context with no error. <code>useThreeSketch</code> and <code>&lt;FiberSketch /&gt;</code>
+          both guard against this by default — each instance waits for a slot in a shared,
+          module-level budget (default: 4 concurrent) before creating its renderer/Canvas.
         </p>
 <pre><code>import { configureWebglBudget, getWebglBudget } from 'next-sketch';
 
@@ -199,7 +284,7 @@ getWebglBudget();        // -> { active: 2, max: 6 }</code></pre>
         <p>Tracks whether an element is inside the viewport via <code>IntersectionObserver</code>, so you can mount an expensive sketch only while it's actually visible.</p>
 <pre><code>const wrapperRef = useRef&lt;HTMLDivElement&gt;(null);
 const inView = useInViewport(wrapperRef, { rootMargin: '200px', once: false });</code></pre>
-        <p>With <code>once: true</code> it stays <code>true</code> forever after the first intersection — no restart cost on scroll. With <code>once: false</code> it flips back to <code>false</code> off-screen, letting a <code>&lt;ThreeSketch /&gt;</code> unmount and free its budget slot in a long gallery page.</p>
+        <p>With <code>once: true</code> it stays <code>true</code> forever after the first intersection — no restart cost on scroll. With <code>once: false</code> it flips back to <code>false</code> off-screen, letting a <code>&lt;ThreeSketch /&gt;</code>/<code>&lt;FiberSketch /&gt;</code>/<code>&lt;P5Sketch /&gt;</code> unmount and free its budget slot in a long gallery page. <code>&lt;P5Sketch /&gt;</code> and <code>&lt;FiberSketch /&gt;</code> build this in via their own <code>lazy</code>/<code>rootMargin</code> props.</p>
       </div>
 
       <div class="api-block">

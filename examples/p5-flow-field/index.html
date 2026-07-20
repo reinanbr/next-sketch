@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>p5.js flow field — next-sketch examples</title>
+<meta name="description" content="500 particles drifting through a Perlin-noise flow field, built with real p5.js — the same sketch function you'd pass to <P5Sketch />.">
+<link rel="stylesheet" href="../../assets/style.css">
+<!--
+  The live demo below loads p5 v1's classic global build (self-contained,
+  no bundler needed — p5 v2's ESM build has real npm dependencies like
+  colorjs.io that only resolve through a real bundler). The sketch function
+  itself is unchanged between p5 v1/v2 and is exactly what you'd pass to
+  <P5Sketch /> (which targets p5 v2 via @p5-wrapper/react in a real app).
+-->
+<script src="https://unpkg.com/p5@1.11.13/lib/p5.min.js"></script>
+</head>
+<body>
+<div class="example-page">
+  <header class="example-header">
+    <h1>p5.js flow field</h1>
+    <a class="back" href="../../index.html">&larr; back to next-sketch</a>
+  </header>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="controls">
+    <button id="toggle">Pause</button>
+    <span>500 particles drifting through a Perlin-noise vector field — real p5.js, running via <code>&lt;P5Sketch /&gt;</code>.</span>
+  </div>
+
+  <details class="source">
+    <summary>View the equivalent next-sketch (React) code</summary>
+    <div class="source-body">
+<pre><code>'use client';
+
+import { P5Sketch } from 'next-sketch/p5';
+
+const PARTICLE_COUNT = 500;
+
+export default function FlowField() {
+  return (
+    &lt;P5Sketch
+      style={{ width: '100%', height: 400 }}
+      sketch={(p) => {
+        let particles = [];
+        let zoff = 0;
+
+        p.setup = () => {
+          p.createCanvas(p.windowWidth, 400);
+          particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+            x: p.random(p.width),
+            y: p.random(p.height),
+          }));
+          p.background(15, 23, 42);
+        };
+
+        p.draw = () => {
+          p.noStroke();
+          p.fill(15, 23, 42, 12);
+          p.rect(0, 0, p.width, p.height);
+
+          for (const pt of particles) {
+            const angle = p.noise(pt.x * 0.005, pt.y * 0.005, zoff) * p.TWO_PI * 2;
+            pt.x += Math.cos(angle) * 1.5;
+            pt.y += Math.sin(angle) * 1.5;
+            if (pt.x &lt; 0) pt.x = p.width;
+            if (pt.x &gt; p.width) pt.x = 0;
+            if (pt.y &lt; 0) pt.y = p.height;
+            if (pt.y &gt; p.height) pt.y = 0;
+
+            p.stroke(99, 102, 241, 160);
+            p.point(pt.x, pt.y);
+          }
+          zoff += 0.003;
+        };
+      }}
+    /&gt;
+  );
+}</code></pre>
+    </div>
+  </details>
+</div>
+
+<script>
+  const PARTICLE_COUNT = 500;
+  const stage = document.getElementById('stage');
+
+  const sketch = (p) => {
+    let particles = [];
+    let zoff = 0;
+
+    p.setup = () => {
+      const canvas = p.createCanvas(stage.clientWidth, stage.clientHeight);
+      canvas.parent(stage);
+      particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+        x: p.random(p.width),
+        y: p.random(p.height),
+      }));
+      p.background(15, 23, 42);
+    };
+
+    p.draw = () => {
+      p.noStroke();
+      p.fill(15, 23, 42, 12);
+      p.rect(0, 0, p.width, p.height);
+
+      for (const pt of particles) {
+        const angle = p.noise(pt.x * 0.005, pt.y * 0.005, zoff) * p.TWO_PI * 2;
+        pt.x += Math.cos(angle) * 1.5;
+        pt.y += Math.sin(angle) * 1.5;
+        if (pt.x < 0) pt.x = p.width;
+        if (pt.x > p.width) pt.x = 0;
+        if (pt.y < 0) pt.y = p.height;
+        if (pt.y > p.height) pt.y = 0;
+
+        p.stroke(99, 102, 241, 160);
+        p.point(pt.x, pt.y);
+      }
+      zoff += 0.003;
+    };
+  };
+
+  const instance = new p5(sketch, stage);
+
+  new ResizeObserver(() => {
+    instance.resizeCanvas(stage.clientWidth, stage.clientHeight);
+  }).observe(stage);
+
+  const toggle = document.getElementById('toggle');
+  let running = true;
+  toggle.addEventListener('click', () => {
+    if (running) {
+      instance.noLoop();
+      toggle.textContent = 'Play';
+    } else {
+      instance.loop();
+      toggle.textContent = 'Pause';
+    }
+    running = !running;
+  });
+</script>
+</body>
+</html>

@@ -101,7 +101,8 @@ export default function Sketch() {
 See [`examples/bouncing-particles.tsx`](examples/bouncing-particles.tsx) for a fuller example
 with particles, input, and a play/pause control, or browse the
 [live example gallery](https://reinanbr.github.io/next-sketch/) for this and other demos
-(pointer input, Three.js) running standalone in the browser.
+(pointer input, Three.js, p5.js simulations and a small game, a react-three-fiber orbit scene)
+running standalone in the browser.
 
 ## Subpath exports
 
