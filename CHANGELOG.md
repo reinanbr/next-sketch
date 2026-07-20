@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.1
+
+- No library code changes — docs/CI-only patch release.
+- Moved the GitHub Pages site (`index.html`, `assets/`, `examples/`) into `docs/` to match the
+  repo's configured Pages source, and added `docs/.nojekyll` so it's served as static files
+  instead of being run through Jekyll/Sass.
+- Added three live examples to the docs gallery: a p5.js flow-field simulation, a p5.js dodge
+  game, and a react-three-fiber orbiting-bodies simulation with OrbitControls — each pairing a
+  real, browser-verified demo with the equivalent `<P5Sketch />`/`<FiberSketch />` React code.
+- Wired `environment: npm_publish` into the CI publish job so it resolves `NPM_TOKEN` from that
+  GitHub environment.
+- Fixed the README's link to `examples/bouncing-particles.tsx` after the `docs/` move.
+
 ## 0.3.0
 
 - **Breaking:** split the package into subpath exports. The main `next-sketch` entry point now

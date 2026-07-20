@@ -1,6 +1,6 @@
 {
   "name": "next-sketch",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "p5.js-style canvas sketches for React/Next.js — headless hooks plus drop-in <CanvasSketch>/<ThreeSketch>/<P5Sketch>/<FiberSketch> components, SSR-safe and DPR-aware, with optional Three.js, p5.js, and react-three-fiber engines behind their own subpath exports and a shared WebGL context budget.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
