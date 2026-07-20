@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 - **Breaking:** removed `<P5Sketch />` (`next-sketch/p5`) and `<FiberSketch />` (`next-sketch/fiber`),
   along with the `@p5-wrapper/react`/`p5`/`@react-three/fiber` peer dependencies they pulled in.
